@@ -8,13 +8,13 @@ MATCH (p:Person)-[r:ACTED_IN]->(m:Movie) RETURN p,r,m
 /* mostrar grafo completo */ 
 MATCH (n)-[r]->(m) RETURN n, r, m
 
-/* listar todos los nodos */
+/* mostrar todos los nodos */
 MATCH (n) RETURN n
 
-/* listar 100 nodos */
+/* mostrar 100 nodos */
 MATCH (n) RETURN n LIMIT 100
 
-/* obtener nombre y edad de nodos Persona */
+/* lista de nombre y año de nacimiento de personas*/
 MATCH (p:Person) RETURN p.name AS nombre, p.born as born
 
 /* personas que actuaron en películas */
@@ -29,7 +29,7 @@ MATCH (a:Person)-[r:ACTED_IN] -> (m:Movie), (a)-[d:DIRECTED]-(m) RETURN a, r, d,
 /* personas que dirigieron, produjeron y escribieron películas */
 MATCH (a:Person)-[r:DIRECTED] -> (m:Movie), (a)-[d:PRODUCED]-(m), (a)-[w:WROTE]-(m) RETURN a, r, d, w, m
 
-/* actores que siguen a otros */
+/* personas que siguen a otros */
 MATCH (a:Person)-[r:FOLLOWS]->(b:Person) RETURN a, r, b
 
 /* actores que han trabajado juntos en la misma película */
@@ -42,11 +42,11 @@ ORDER BY moviesTogether DESC
 
 /* crear una relación FOLLOWS entre dos personas */
 MATCH (a:Person {name: 'Jessica Thompson'})
-MATCH (p:Person {name: 'James Thompson'})
-MERGE (a)-[r:FOLLOWS]->(p)
+MATCH (b:Person {name: 'James Thompson'})
+MERGE (a)-[r:FOLLOWS]->(b)
 
 /* borrar una relación FOLLOWS entre dos personas
-MATCH (a:Person {name: 'Jessica Thompson'})-[r:FOLLOWS]->(p:Person {name: 'James Thompson'})
+MATCH (a:Person {name: 'Jessica Thompson'})-[r:FOLLOWS]->(b:Person {name: 'James Thompson'})
 DELETE r;
 
 /* borrar el grafo completo */
