@@ -1,1 +1,60 @@
+/*********** EJEMPLOS DE CONSULTAS ************/
+/***     	CYPHER 		    ***********/
+/*********************************************/
 
+/* mostrar grafo de actores y peliculas */ 
+MATCH (p:Person)-[r:ACTED_IN]->(m:Movie) RETURN p,r,m
+
+/* mostrar grafo completo */ 
+MATCH (n)-[r]->(m) RETURN n, r, m
+
+/* listar todos los nodos */
+MATCH (n) RETURN n
+
+/* listar 100 nodos */
+MATCH (n) RETURN n LIMIT 100
+
+/* obtener nombre y edad de nodos Persona */
+MATCH (p:Person) RETURN p.name AS nombre, p.born as born
+
+/* actores que actuaron en películas */
+MATCH (a:Person)-[r:ACTED_IN] -> (m:Movie) RETURN a, r, m
+
+/* películas donde actuó Tom Cruise */
+MATCH (p:Person)-[r:ACTED_IN]->(m:Movie) where p.name='Tom Cruise' RETURN p,r,m
+
+/* películas donde actuó Keanu Reeves */
+MATCH (a:Person {name: 'Keanu Reeves'})-[r:ACTED_IN] -> (m:Movie) RETURN a,r,m
+
+/* personas que actuaron y dirigieron películas */
+MATCH (a:Person)-[r:ACTED_IN] -> (m:Movie), (a)-[d:DIRECTED]-(m) RETURN a, r, d, m
+
+/* personas que dirigieron, produjeron y escribieron películas */
+MATCH (a:Person)-[r:DIRECTED] -> (m:Movie), (a)-[d:PRODUCED]-(m), (a)-[w:WROTE]-(m) RETURN a, r, d, w, m
+
+/* actores que siguen a otros */
+MATCH (a:Person)-[r:FOLLOWS]->(b:Person) RETURN a, r, b
+
+/* actores que han trabajado juntos en la misma película */
+MATCH (a:Person)-[:ACTED_IN]->(m:Movie)<-[:ACTED_IN]-(b:Person)
+WHERE a.name < b.name
+WITH a, b, collect(m.title) AS movies, count(m) AS moviesTogether
+WHERE moviesTogether > 2
+RETURN a.name, b.name, movies, moviesTogether
+ORDER BY moviesTogether DESC
+
+/* crear una relación FOLLOWS entre dos personas */
+MATCH (a:Person {name: 'Jessica Thompson'})
+MATCH (p:Person {name: 'James Thompson'})
+MERGE (a)-[r:FOLLOWS]->(p)
+
+/* borrar una relación FOLLOWS entre dos personas
+MATCH (a:Person {name: 'Jessica Thompson'})-[r:FOLLOWS]->(p:Person {name: 'James Thompson'})
+DELETE r;
+
+/* borrar el grafo completo */
+MATCH (n) DETACH DELETE n
+
+/*borrar constraint de la base de datos*/
+DROP CONSTRAINT movie_title IF EXISTS;
+DROP CONSTRAINT person_name IF EXISTS;
