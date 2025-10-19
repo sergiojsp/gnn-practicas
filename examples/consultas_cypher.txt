@@ -17,11 +17,8 @@ MATCH (n) RETURN n LIMIT 100
 /* obtener nombre y edad de nodos Persona */
 MATCH (p:Person) RETURN p.name AS nombre, p.born as born
 
-/* actores que actuaron en películas */
+/* personas que actuaron en películas */
 MATCH (a:Person)-[r:ACTED_IN] -> (m:Movie) RETURN a, r, m
-
-/* películas donde actuó Tom Cruise */
-MATCH (p:Person)-[r:ACTED_IN]->(m:Movie) where p.name='Tom Cruise' RETURN p,r,m
 
 /* películas donde actuó Keanu Reeves */
 MATCH (a:Person {name: 'Keanu Reeves'})-[r:ACTED_IN] -> (m:Movie) RETURN a,r,m
