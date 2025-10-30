@@ -45,6 +45,12 @@ MATCH (a:Person {name: 'Jessica Thompson'})
 MATCH (b:Person {name: 'James Thompson'})
 MERGE (a)-[r:FOLLOWS]->(b)
 
+/* buscar la ruta más corta entre dos actores */
+MATCH (p1:Person {name: "Tom Hanks"}), 
+      (p2:Person {name: "Kevin Bacon"}),
+      path = shortestPath((p1)-[:ACTED_IN*]-(p2))
+RETURN path
+
 /* borrar una relación FOLLOWS entre dos personas
 MATCH (a:Person {name: 'Jessica Thompson'})-[r:FOLLOWS]->(b:Person {name: 'James Thompson'})
 DELETE r;
