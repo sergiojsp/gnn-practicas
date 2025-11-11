@@ -2,11 +2,11 @@
 /**********     	CYPHER 		   *************/
 /*********************************************/
 
-/* mostrar grafo de actores y peliculas */ 
-MATCH (p:Person)-[r:ACTED_IN]->(m:Movie) RETURN p,r,m
-
 /* mostrar grafo completo */ 
 MATCH (n)-[r]->(m) RETURN n, r, m
+
+/* mostrar grafo de actores y peliculas */ 
+MATCH (p:Person)-[r:ACTED_IN]->(m:Movie) RETURN p,r,m
 
 /* mostrar todos los nodos */
 MATCH (n) RETURN n
@@ -23,14 +23,25 @@ MATCH (a:Person)-[r:ACTED_IN] -> (m:Movie) RETURN a, r, m
 /* películas donde actuó Keanu Reeves */
 MATCH (a:Person {name: 'Keanu Reeves'})-[r:ACTED_IN] -> (m:Movie) RETURN a,r,m
 
+/* películas de Cameron Crowe */
+MATCH (n)-[r]->(m) WHERE n.name='Cameron Crowe' RETURN n, r, m
+
+/* personas cuyo nombre contenga la cadena Tom */
+MATCH (n)-[r]->(m) WHERE n.name CONTAINS 'Tom' RETURN n, r, m
+
 /* personas que actuaron y dirigieron películas */
 MATCH (a:Person)-[r:ACTED_IN] -> (m:Movie), (a)-[d:DIRECTED]-(m) RETURN a, r, d, m
 
 /* personas que dirigieron, produjeron y escribieron películas */
 MATCH (a:Person)-[r:DIRECTED] -> (m:Movie), (a)-[d:PRODUCED]-(m), (a)-[w:WROTE]-(m) RETURN a, r, d, w, m
 
-/* personas que siguen a otros */
-MATCH (a:Person)-[r:FOLLOWS]->(b:Person) RETURN a, r, b
+/* personas que tiene relación FOLLOWS con James Thompson*/
+MATCH (a:Person {name: 'James Thompson'})-[r:FOLLOWS]-(b:Person) RETURN a, r, b
+
+/* crear una relación FOLLOWS entre dos personas */
+MATCH (a:Person {name: 'Jessica Thompson'})
+MATCH (b:Person {name: 'James Thompson'})
+MERGE (a)-[r:FOLLOWS]->(b)
 
 /* actores que han trabajado juntos en la misma película */
 MATCH (a:Person)-[:ACTED_IN]->(m:Movie)<-[:ACTED_IN]-(b:Person)
@@ -40,15 +51,16 @@ WHERE moviesTogether > 2
 RETURN a.name, b.name, movies, moviesTogether
 ORDER BY moviesTogether DESC
 
-/* crear una relación FOLLOWS entre dos personas */
-MATCH (a:Person {name: 'Jessica Thompson'})
-MATCH (b:Person {name: 'James Thompson'})
-MERGE (a)-[r:FOLLOWS]->(b)
-
 /* buscar la ruta más corta entre dos actores */
-MATCH (p1:Person {name: "Tom Hanks"}), 
-      (p2:Person {name: "Kevin Bacon"}),
+MATCH (p1:Person {name: "Kevin Bacon"}), 
+      (p2:Person {name: "Laurence Fishburne"}),
       path = shortestPath((p1)-[:ACTED_IN*]-(p2))
+RETURN path
+
+/* buscar todas las rutas más cortas entre dos actores */
+MATCH (p1:Person {name: "Kevin Bacon"}), 
+      (p2:Person {name: "Laurence Fishburne"})
+MATCH path = allShortestPaths((p1)-[:ACTED_IN*]-(p2))
 RETURN path
 
 /* borrar una relación FOLLOWS entre dos personas
